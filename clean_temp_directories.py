@@ -28,7 +28,6 @@ def init_logger(location: str, logger_name: str) -> logging.getLogger():
     if not location:
         raise AttributeError('No backup directory specified!')
 
-
     today = datetime.datetime.now().strftime('[%m-%d-%Y]')
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
