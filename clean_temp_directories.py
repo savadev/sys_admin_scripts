@@ -13,23 +13,29 @@ import logging
 import datetime
 
 
-def init_logger(logger_name) -> logging.getLogger():
+def init_logger(location: str, logger_name: str) -> logging.getLogger():
     """
     Initializes logger object for backup script.
 
     Args:
+        location: directory to store logs.
         logger_name: name to identify logger.
 
     Returns:
         logger instance with corresponding name.
     """
+
+    if not location:
+        raise AttributeError('No backup directory specified!')
+
+
     today = datetime.datetime.now().strftime('[%m-%d-%Y]')
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         '[%(levelname)s]\t-\t[%(asctime)s]\t-\t%(name)s\t%(message)s')
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-    file_handler = logging.FileHandler('{}-sys_admin.log'.format(today))
+    file_handler = logging.FileHandler('{}/{}-sys_admin.log'.format(location, today))
     file_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
@@ -40,10 +46,15 @@ def init_logger(logger_name) -> logging.getLogger():
         logger.setLevel(logging.DEBUG)
     elif run_state == 'PROD':
         logger.setLevel(logging.INFO)
+
+    logger.info('Successfully initialized logger!')
+    logger.info('Backup Logs Directory: {}'.format(location))
     return logger
 
 
-log = init_logger('clean_temp_directories.py')
+log = init_logger(
+    os.environ.get('BACKUP_DIR', None), 'clean_temp_directories.py'
+)
 
 
 def load_settings() -> dict:

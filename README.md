@@ -1,6 +1,10 @@
 # System Administration Scripts
 My utility scripts for common server/backup tasks powered by python 3.6!
 
+## **Common Information**
+Logs are generated and saved to files based on the directory specified by the
+environment variable `BACKUP_DIR` (THIS MUST BE SET IN ORDER TO DO ANYTHING).
+
 ## **backup.py**
 A script for backing up files to another location local/remote.
 
@@ -32,3 +36,4 @@ A script for cleaning out marked directories.
 
 The script requires the same settings.json file from above and uses the 
 `tempDirectories` property to know which directories to target for clean up.
+
