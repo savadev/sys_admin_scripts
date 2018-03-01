@@ -1,10 +1,11 @@
 #!/usr/bin/env python3.6
 """
-Back Up Files Script
+Temporary Directory Cleanup Script
 Author: Mike Tung <miketung2013@gmail.com>
-2/22/2018
+2/28/2018
 """
 
+import glob
 import json
 import os
 import subprocess as sp
@@ -42,7 +43,7 @@ def init_logger(logger_name) -> logging.getLogger():
     return logger
 
 
-log = init_logger('backup.py')
+log = init_logger('clean_temp_directories.py')
 
 
 def load_settings() -> dict:
@@ -65,33 +66,44 @@ def load_settings() -> dict:
     return settings
 
 
-def issue_rsync(src_dir: str, dest_dir: str) -> None:
-    log.info(
-        'Backing up source directory {} to server {}'.format(src_dir, dest_dir)
-    )
-    process = sp.run(
-        ['rsync', '-azv', '--delete', src_dir, dest_dir],
-        stdout=sp.PIPE,
-        stderr=sp.PIPE
-    )
-    log.info(process.stdout.decode('utf-8'))
+def issue_delete(target_dir) -> None:
+    """
+    Issues command to delete files from provided directory.
 
-    if process.stderr:
-        log.error(process.stderr.decode('utf-8'))
+    Args:
+        target_dir: directory whose files should be deleted.
+
+    Returns:
+        None
+    """
+    log.info('deleting files in {}'.format(target_dir))
+
+    for fi in glob.glob('{}/*'.format(target_dir)):
+        log.info('deleting {} from {}...'.format(fi, target_dir))
+        process = sp.run(['rm', '-rfv', fi], stdout=sp.PIPE, stderr=sp.PIPE)
+        log.info(process.stdout.decode('utf-8'))
+
+        if process.stderr:
+            log.error(process.stderr.decode('utf-8'))
 
 
 def main():
+    """
+    Main function to kick off directory clean up.
+
+    Returns:
+        None
+    """
     log.info('Initialized logging!')
     log.info('Loading settings...')
     settings = load_settings()
     log.info('Done loading settings!')
     home_directory = settings['homeDirectory']
-    src_directories = settings['sourceDirectories']
-    dest_directory = settings['backupDestination']
+    temp_directories = settings['tempDirectories']
 
-    for folder in src_directories:
-        src = '{}/{}'.format(home_directory, folder)
-        issue_rsync(src, dest_directory)
+    for folder in temp_directories:
+        target = '{}/{}'.format(home_directory, folder)
+        issue_delete(target)
 
 
 if __name__ == '__main__':
