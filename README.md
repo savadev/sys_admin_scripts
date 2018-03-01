@@ -5,6 +5,18 @@ My utility scripts for common server/backup tasks powered by python 3.6!
 Logs are generated and saved to files based on the directory specified by the
 environment variable `BACKUP_DIR` (THIS MUST BE SET IN ORDER TO DO ANYTHING).
 
+If you would like to run these on a scheduler like crontab, you will need to
+wrap the py scripts in a shell script like so.
+
+```bash
+#!/bin/bash
+set -e
+
+export BACKUP_DIR=<absolute back up directory>
+export BACKUP_CONFIG=<absolute directory of settings.json file>
+<absolute path to py script>
+```
+
 ## **backup.py**
 A script for backing up files to another location local/remote.
 
