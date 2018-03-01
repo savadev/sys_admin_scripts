@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.6
 """
 Back Up Files Script
 Author: Mike Tung <miketung2013@gmail.com>
@@ -52,7 +53,7 @@ def load_settings() -> dict:
     Returns:
         dictionary object containing the configurations.
     """
-    backup_config = os.environ.get('BACKUP_CONFIG', None)
+    backup_config = os.environ.get('BACKUP_CONFIG', './settings.json')
     log.info('Loading backup configuration file...')
     if not backup_config:
         log.error('No backup configuration file found!')
